@@ -1,4 +1,8 @@
 @font-face {
-    font-family: Pixel;
+    font-family: PixelDart;
     src: url('fonts/PixelDart.ttf');
+}
+.secret {
+    font-family: PixelDart;
+    color: #FFFFFF;
 }
