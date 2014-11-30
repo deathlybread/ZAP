@@ -1,8 +1,3 @@
-//Global variables
-//Sound effect objects 
-var audioMP3_menuSelect = new Audio('sounds/menu-select.mp3');
-var audioWAV_menuSelect = new Audio('sounds/menu-select.wav');
-
 window.onload = function () {
     //Get canvas element 'game'
     var c = document.getElementById('game');
@@ -13,14 +8,15 @@ window.onload = function () {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, c.width, c.height);
     
-    //Call main loop function to initialise game
-    mainLoop();
+    //initialise game
+    initialise();
 };
 
-function mainLoop () {
+function initialise () {
     //Show title screen
     splashScreen();
 }
+
 function splashScreen () {
     var logo = new Image();
         
@@ -66,18 +62,43 @@ function splashScreen () {
     setInterval(function () {
         document.onkeydown = function (e) { 
 
-        if (e.keyCode == '40' && optionSelect < 2) {
+        if (e.keyCode == 40 && optionSelect < 2) {
             optionSelect++;
-            audioMP3_menuSelect.play();
-            audioWAV_menuSelect.play();
+            document.getElementById('menu-select').play();
         }
-        if (e.keyCode == '38' && optionSelect >= 1) {
+        if (e.keyCode == 38 && optionSelect >= 1) {
             optionSelect--;
-            audioMP3_menuSelect.play();
-            audioWAV_menuSelect.play();
+            document.getElementById('menu-select').play();
+        }
+        if (e.keyCode == 13) {
+            menuSelect(optionSelect);
         }
     };   
     }, 1);
+}
+
+function menuSelect(option) {
+    if (option == 0) {
+        game();
+    }
+    if (option == 1) {
+        options();
+    }
+    else {
+        credits();
+    }
+}
+
+function game() {
+
+}
+
+function options() {
+
+}
+
+function credits () {
+
 }
 
 

@@ -5,13 +5,20 @@
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <div class = 'secret'>Hello! You found a secret!</div>
+        <div class='secret'>Hello! You found a secret!</div>
         <center>
-            <canvas id = 'game' width = 500 height = 500>
+            <canvas id='game' width=500 height=500>
                 Your browser does not support HTML5 canvas!
             </canvas>
         </center>
         <!--Game script for canvas-->
         <script src='game.js'></script>
+        <!--Audio tags for game sound effects-->
+        <audio id='menu-select'>
+            <source src='sounds/menu-select.ogg'>
+            <source src='sounds/menu-select.wav'>
+            <source src='sounds/menu-select.mp3'>
+            Your brwoser does not support HTML5 audio!
+        </audio>
     </body>
 </html>
