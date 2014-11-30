@@ -11,6 +11,12 @@ var ctx;
 var menu_hasSelected = false;
 //Check if game start countdown has finished
 var countdown_hasFinished = false;
+//Gameplay variables
+var ammo = 1;
+var time_seconds = 0;
+var time_minutes = 0;
+var time_hours = 0;
+var lives = 3;
 
 window.onload = function () {
     //Get canvas element 'game'
@@ -47,6 +53,8 @@ function splashScreen () {
     var optionSelect = 0;
     //Draw menu options taking into account selected option
     var menu = setInterval(function () {
+        ctx.fillStyle ='black';
+        ctx.fillRect(0, 0, c.width, c.height);
         if (menu_hasSelected == false) {
             if (optionSelect == 0) {
                 ctx.fillStyle = '#e74c3c'  
@@ -74,6 +82,8 @@ function splashScreen () {
             }
             ctx.font = '40px PixelDart';
             ctx.fillText('Credits', 210, 355);
+            
+            ctx.drawImage(logo, 150, 25);
         }
         else {
             clearInterval(menu);
@@ -137,11 +147,9 @@ function credits () {
 }
 
 function countdown () {
-    var countdownNo = 3;
+    var countdownNo = 4;
     ctx.fillStyle = 'white';
     ctx.font = '100px PixelDart';
-    ctx.fillText(3, 230, 275);
-    document.getElementById('menu-select').play();
     
     var countdownTimer = setInterval(function () {
         if (countdown_hasFinished == false) {
@@ -162,19 +170,12 @@ function countdown () {
         }
         else {
             clearInterval(countdownTimer);
-            game();
+            mainLoop();
         } 
     }, 1000);
 }
 
-function game () {
-    drawMap();
-}
-
-function drawMap () {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, c.width, c.height);
-    
+function drawMap () {    
     var wallHorizontal = new Image();
     
     wallHorizontal.onload = function () {
@@ -257,7 +258,46 @@ function drawMap () {
     //Fill hud boxes with text
     ctx.fillStyle = 'white';
     ctx.font = '40px PixelDart';
-    ctx.fillText('Ammo', 95, 490);
-    ctx.fillText('Time', 335, 490);
+    ctx.fillText('Ammo', 85, 490);
+    ctx.fillText('Time', 340, 490);
+    ctx.fillText('Lives', 215, 665);
+}
+
+function mainLoop() {
+    var gameRefresh = setInterval(function () {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, c.width, c.height);
+        drawMap();
+        //Refresh gameplay variables; ammon, etc.
+        ctx.fillStyle = 'white';
+        ctx.font = '50px PixelDart';
+        ctx.fillText(ammo, 115, 540);
+        ctx.font = '40px PixelDart';
+        ctx.fillStyle = 'white';
+        ctx.fillText(time_hours + '-' + time_minutes +'-' + time_seconds, 330, 540);
+        ctx.font = '50px PixelDart';
+        ctx.fillText(lives, 240, 715);
+    }, 50)
+    
+    //Timer
+        var gameTimer_seconds = setInterval(function () {
+            if (time_seconds < 59) {
+                time_seconds++;
+            }
+            else {
+                time_seconds = 0;
+            }
+        }, 1000);
+        var gameTimer_minutes = setInterval(function () {
+            if (time_minutes < 59) {
+                time_minutes++;
+            }
+            else {
+                time_minutes = 0;
+            }
+        }, 60000);
+        var gameTimer_hours = setInterval(function () {
+            time_hours++;
+        }, 3600000);
 }
 
