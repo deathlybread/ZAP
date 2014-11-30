@@ -366,7 +366,7 @@ function mainLoop() {
             if (e.keyCode == 37 && bottom == true) {
                 PC.x -= 15;
             }
-            if (e.keyCode == 39 && rightWall == true) {
+            if (e.keyCode == 39 && rightWall == true && PC.y < 50) {
                 PC.y -= 15;
             }
             if (e.keyCode == 37 && rightWall == true) {
@@ -375,7 +375,7 @@ function mainLoop() {
             if (e.keyCode == 39 && leftWall == true) {
                 PC.y += 15;
             }
-            if (e.keyCode == 37 && leftWall == true) {
+            if (e.keyCode == 37 && leftWall == true && PC.y < 50) {
                 PC.y -= 15;
             } 
         }
