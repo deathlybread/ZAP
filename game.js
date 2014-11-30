@@ -317,14 +317,14 @@ function mainLoop() {
         if (PC.x < 100 && leftWall == false) {
             //Start moving accross left wall
             PC.sprite = playerSprite_right;
-            PC.x = 60;
+            PC.x = 45;
             PC.y = 370;
             
             rightWall = false;
             leftWall = true;
             bottom = false;
         }
-        if (PC.y > 370 && PC.x == 60 && bottom == false) {
+        if (PC.y > 370 && PC.x == 45 && bottom == false) {
             //Start moving accross bottom
             PC.sprite = playerSprite_up;
             PC.x = 100;
@@ -366,7 +366,7 @@ function mainLoop() {
             if (e.keyCode == 37 && bottom == true) {
                 PC.x -= 15;
             }
-            if (e.keyCode == 39 && rightWall == true && PC.y < 50) {
+            if (e.keyCode == 39 && rightWall == true && PC.y > 50) {
                 PC.y -= 15;
             }
             if (e.keyCode == 37 && rightWall == true) {
@@ -375,7 +375,7 @@ function mainLoop() {
             if (e.keyCode == 39 && leftWall == true) {
                 PC.y += 15;
             }
-            if (e.keyCode == 37 && leftWall == true && PC.y < 50) {
+            if (e.keyCode == 37 && leftWall == true && PC.y > 50) {
                 PC.y -= 15;
             } 
         }
