@@ -1,3 +1,8 @@
+//Global variables
+//Sound effect objects 
+var audioMP3_menuSelect = new Audio('sounds/menu-select.mp3');
+var audioWAV_menuSelect = new Audio('sounds/menu-select.wav');
+
 window.onload = function () {
     //Get canvas element 'game'
     var c = document.getElementById('game');
@@ -63,11 +68,13 @@ function splashScreen () {
 
         if (e.keyCode == '40' && optionSelect < 2) {
             optionSelect++;
-            document.getElementById('menu-select').play();
+            audioMP3_menuSelect.play();
+            audioWAV_menuSelect.play();
         }
         if (e.keyCode == '38' && optionSelect >= 1) {
             optionSelect--;
-            document.getElementById('menu-select').play();
+            audioMP3_menuSelect.play();
+            audioWAV_menuSelect.play();
         }
     };   
     }, 1);
