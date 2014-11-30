@@ -1,3 +1,8 @@
+/* Copyright (C) Prithvi Kohli 2014, All rights reserved
+ * www.prithvikohli.co.uk
+ * Contact: prithvi@prithvikohli.co.uk
+ */
+
 //Global variables
 //Canvas variables
 var c;
@@ -114,6 +119,8 @@ function menuSelect(option) {
 }
 
 function startGame() {
+    //Explode canvas
+    c.height = 800;
     //Clear screen
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, c.width, c.height);
@@ -246,5 +253,11 @@ function drawMap () {
     };
     
     hudBox.src = 'images/ZAP-Hud box.png';
+    
+    //Fill hud boxes with text
+    ctx.fillStyle = 'white';
+    ctx.font = '40px PixelDart';
+    ctx.fillText('Ammo', 95, 490);
+    ctx.fillText('Time', 335, 490);
 }
 
