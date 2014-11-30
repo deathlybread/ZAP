@@ -12,11 +12,19 @@ var menu_hasSelected = false;
 //Check if game start countdown has finished
 var countdown_hasFinished = false;
 //Gameplay variables
-var ammo = 1;
 var time_seconds = 0;
 var time_minutes = 0;
 var time_hours = 0;
-var lives = 3;
+//Entity arrays
+var enemies = ['blah', 'blah'];
+//Sprites
+var playerSprite_up = new Image();
+var playerSprite_left = new Image();
+var playerSprite_right = new Image();
+//Player position variables
+var rightWall;
+var leftWall;
+var bottom;
 
 window.onload = function () {
     //Get canvas element 'game'
@@ -264,6 +272,10 @@ function drawMap () {
 }
 
 function mainLoop() {
+    //Instantiate player object
+    var PC = new player(225, 390, 1, 3);
+    
+    //Canvas refresh loop
     var gameRefresh = setInterval(function () {
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, c.width, c.height);
@@ -271,13 +283,58 @@ function mainLoop() {
         //Refresh gameplay variables; ammon, etc.
         ctx.fillStyle = 'white';
         ctx.font = '50px PixelDart';
-        ctx.fillText(ammo, 115, 540);
+        ctx.fillText(PC.ammo, 115, 540);
         ctx.font = '40px PixelDart';
         ctx.fillStyle = 'white';
         ctx.fillText(time_hours + '-' + time_minutes +'-' + time_seconds, 330, 540);
         ctx.font = '50px PixelDart';
-        ctx.fillText(lives, 240, 715);
-    }, 50)
+        ctx.fillText(PC.lives, 240, 715);
+        
+        //Render entities 
+        ctx.drawImage(PC.sprite, PC.x, PC.y);
+        
+        //Check position of player
+        if (PC.x >= 370 && rightWall == false) {
+            //Start moving accross right wall
+            PC.sprite = playerSprite_left;
+            PC.x = 410;
+            PC.y = 370;
+            
+            rightWall = true;
+            leftWall = false;
+            bottom = false;
+        }
+        if (PC.y > 370 && PC.x == 410 && bottom == false) {
+            //Start moving accross bottom
+            PC.sprite = playerSprite_up;
+            PC.x = 370;
+            PC.y = 390;
+            
+            rightWall = false;
+            leftWall = false;
+            bottom = true;
+        }
+        if (PC.x < 100 && leftWall == false) {
+            //Start moving accross left wall
+            PC.sprite = playerSprite_right;
+            PC.x = 60;
+            PC.y = 370;
+            
+            rightWall = false;
+            leftWall = true;
+            bottom = false;
+        }
+        if (PC.y > 370 && PC.x == 60 && bottom == false) {
+            //Start moving accross bottom
+            PC.sprite = playerSprite_up;
+            PC.x = 100;
+            PC.y = 390;
+            
+            rightWall = false;
+            leftWall = false;
+            bottom = true;
+        }
+    }, 50);
     
     //Timer
         var gameTimer_seconds = setInterval(function () {
@@ -299,5 +356,58 @@ function mainLoop() {
         var gameTimer_hours = setInterval(function () {
             time_hours++;
         }, 3600000);
+    
+    //Input event handler
+    var gameInput = setInterval(function () {
+        document.onkeydown = function (e) {
+            if (e.keyCode == 39 && bottom == true) {
+                PC.x += 15;
+            }
+            if (e.keyCode == 37 && bottom == true) {
+                PC.x -= 15;
+            }
+            if (e.keyCode == 39 && rightWall == true) {
+                PC.y -= 15;
+            }
+            if (e.keyCode == 37 && rightWall == true) {
+                PC.y += 15;
+            } 
+            if (e.keyCode == 39 && leftWall == true) {
+                PC.y += 15;
+            }
+            if (e.keyCode == 37 && leftWall == true) {
+                PC.y -= 15;
+            } 
+        }
+    }, 1);
 }
 
+//Entity object constructors
+function player (locationX, locationY, ammo, lives) {
+    this.x = locationX;
+    this.y = locationY;
+    this.ammo = ammo;
+    this.lives = lives;
+    
+    //(Default sprite is pointing upward)
+    this.sprite = playerSprite_up;
+    //(Therefore, bottom player position is true
+    bottom = true;
+    rightWall = false;
+    leftWall = false;
+    
+    playerSprite_up.onload = function () {
+        ctx.drawImage(playerSprite_up, this.x, this.y);
+    };
+    
+    playerSprite_up.src = 'images/ZAP-Shooter up.png';
+    playerSprite_left.src = 'images/ZAP-Shooter left.png';
+    playerSprite_right.src = 'images/ZAP-Shooter right.png';
+}
+
+function enemy (locationX, locationY, type, colour) {
+    this.x = locationX;
+    this.y = locationY;
+    this.type = type;
+    this.colour = colour;
+}
