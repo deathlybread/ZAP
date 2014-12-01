@@ -16,15 +16,22 @@ var time_seconds = 0;
 var time_minutes = 0;
 var time_hours = 0;
 //Entity arrays
-var enemies = ['blah', 'blah'];
+var enemies = [];
 //Sprites
 var playerSprite_up = new Image();
 var playerSprite_left = new Image();
 var playerSprite_right = new Image();
+var enemySprite_green = new Image();
+var enemySprite_blue = new Image();
+var enemySprite_orange = new Image();
+var enemySprite_red = new Image();
 //Player position variables
 var rightWall;
 var leftWall;
 var bottom;
+//Enemy variables
+//(Default spawn rate (1000 milliseconds = 1 second))
+var enemySpawnRate = 1000;
 
 window.onload = function () {
     //Get canvas element 'game'
@@ -293,6 +300,15 @@ function mainLoop() {
         //Render entities 
         ctx.drawImage(PC.sprite, PC.x, PC.y);
         
+        for (x = 0; x < enemies.length; x++) {
+            ctx.drawImage(enemies[x].sprite, enemies[x].x, enemies[x].y);
+            if (enemies[x].y >= 385) {
+                PC.lives--;
+            }
+            else {
+                enemies[x].y++;
+            }
+        } 
         //Check position of player
         if (PC.x >= 370 && rightWall == false) {
             //Start moving accross right wall
@@ -380,6 +396,22 @@ function mainLoop() {
             } 
         }
     }, 1);
+    
+    //Enemy spawner 
+    var enemySpawner = setInterval(function () {
+        //Random enemy variables
+        var type;
+        var posX = [115, 130, 145, 160, 175, 190, 205, 220, 235, 250, 265, 280]
+        
+        //Generate random numbers
+        //For type
+        var type_randnum = Math.floor((Math.random() * 4) + 1);
+        //For x position
+        var posX_randnum = posX[Math.floor(Math.random() * posX.length)];
+        
+        //Instantiate enemy object with values of random variables as arguments, and add object to 'enemies' array 
+        enemies.push(new enemy(posX_randnum, 100, type_randnum));
+    }, enemySpawnRate);
 }
 
 //Entity object constructors
@@ -405,9 +437,38 @@ function player (locationX, locationY, ammo, lives) {
     playerSprite_right.src = 'images/ZAP-Shooter right.png';
 }
 
-function enemy (locationX, locationY, type, colour) {
+function enemy (locationX, locationY, type) {
     this.x = locationX;
     this.y = locationY;
     this.type = type;
-    this.colour = colour;
+    
+    if (this.type == 1) {
+        this.type = 'green';
+        this.sprite = enemySprite_green; 
+        
+        ctx.drawImage(this.sprite, this.x, this.y);
+    }
+    if (this.type == 2) {
+        this.type = 'blue';
+        this.sprite = enemySprite_blue;
+        
+        ctx.drawImage(this.sprite, this.x, this.y);
+    }
+    if (this.type == 3) {
+        this.type = 'orange';
+        this.sprite = enemySprite_orange;
+        
+        ctx.drawImage(this.sprite, this.x, this.y);
+    }
+    if (this.type == 4) {
+        this.type = 'red';
+        this.sprite = enemySprite_red;
+        
+        ctx.drawImage(this.sprite, this.x, this.y);
+    }
+    
+    enemySprite_green.src = 'images/ZAP-Enemy green.png';
+    enemySprite_blue.src = 'images/ZAP-Enemy blue.png';
+    enemySprite_orange.src = 'images/ZAP-Enemy orange.png';
+    enemySprite_red.src = 'images/ZAP-Enemy red.png'
 }
