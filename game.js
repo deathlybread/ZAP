@@ -32,8 +32,13 @@ var rightWall;
 var leftWall;
 var bottom;
 //Enemy variables
+var spawn = true;
 //(Default spawn rate (1000 milliseconds = 1 second))
 var enemySpawnRate = 1000;
+//Whether main game should be rendered
+var gameRender = true;
+//Intervals
+var gameRefresh;
 
 window.onload = function () {
     //Get canvas element 'game'
@@ -192,7 +197,7 @@ function countdown () {
     }, 1000);
 }
 
-function drawMap () {    
+function drawMap () { if (gameRender == true) {    
     var wallHorizontal = new Image();
     
     wallHorizontal.onload = function () {
@@ -278,14 +283,14 @@ function drawMap () {
     ctx.fillText('Ammo', 85, 490);
     ctx.fillText('Time', 340, 490);
     ctx.fillText('Lives', 215, 665);
-}
+} }
 
 function mainLoop() {
     //Instantiate player object
     var PC = new player(225, 390, 1, 3);
     
     //Canvas refresh loop
-    var gameRefresh = setInterval(function () {
+    gameRefresh = setInterval(function () { if (gameRender == true) {
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, c.width, c.height);
         drawMap();
@@ -306,16 +311,39 @@ function mainLoop() {
             ctx.drawImage(enemies[x].sprite, enemies[x].x, enemies[x].y);
             if (enemies[x].y >= 385) {
                 PC.lives--;
+                //Destroy enemy 
+                var index = enemies.indexOf(enemies[x]);
+                enemies.splice(index, 1);
+                
+                //Check player's lives
+                if (PC.lives <= 0) {
+                    //Game over
+                    gameOver(1, 2, 3);
+                }
             }
             else {
                 enemies[x].y++;
             }
         } 
         
-        if (laser == true && laserCount < 1) {
-            ctx.beginPath();
-                ctx.moveTo(PC.x + 25, PC.y);
-                ctx.lineTo(PC.x + 25, PC.y - 400);
+        if (laser == true && laserCount < 5) {
+                var laserX = PC.x + 25;
+                var laserY = PC.y + 25;
+            
+                ctx.beginPath();
+                //Set coordinates according to position of player
+                if (bottom == true) {
+                    ctx.moveTo(laserX - 1, PC.y - 5);
+                    ctx.lineTo(laserX - 1, PC.y - 400);
+                }
+                else if (leftWall == true) {
+                    ctx.moveTo(PC.x + 50, laserY);
+                    ctx.lineTo(PC.x + 400, laserY);
+                }
+                else if (rightWall == true) {
+                    ctx.moveTo(PC.x - 5, laserY);
+                    ctx.lineTo(PC.x - 400, laserY);
+                }
                 ctx.lineWidth = 10;
                 ctx.strokeStyle = '#ff4848';
                 ctx.stroke();
@@ -323,9 +351,23 @@ function mainLoop() {
             
                  //Check if any enemies collide with it 
                 for (x = 0; x < enemies.length; x++) {
-                    if (enemies[x].x > PC.x - 10 && enemies[x].x < PC.x + 10) {
+                    //Destroy enemies according to position of player
+                    //(If player is on bottom)
+                    if ((enemies[x].x + 15) > laserX - 10 && (enemies[x].x - 15) < laserX + 10 && bottom == true) {
                         //Remove from array
-                        var index = enemies.indexOf(x);
+                        var index = enemies.indexOf(enemies[x]);
+                        enemies.splice(index, 1);
+                    }
+                    //(If player is on left wall)
+                    else if (enemies[x].y > laserY - 25 && enemies[x].y < laserY + 10 && leftWall == true) {
+                        //Remove from array
+                        index = enemies.indexOf(enemies[x]);
+                        enemies.splice(index, 1);
+                    }
+                    //(If player is on right wall)
+                    else if (enemies[x].y > laserY - 25 && enemies[x].y < laserY + 10 && rightWall == true) {
+                        //Remove from array
+                        index = enemies.indexOf(enemies[x]);
                         enemies.splice(index, 1);
                     }
                 }
@@ -375,7 +417,7 @@ function mainLoop() {
             leftWall = false;
             bottom = true;
         }
-    }, 50);
+    } }, 50);
     
     //Timer
         var gameTimer_seconds = setInterval(function () {
@@ -419,20 +461,18 @@ function mainLoop() {
             if (e.keyCode == 37 && leftWall == true && PC.y > 50) {
                 PC.y -= 15;
             } 
-            if (e.keyCode == 32 && bottom == true) {
+        }
+        
+        document.onkeyup = function (e) {
+             if (e.keyCode == 32) {
                 laser = true;
-                ctx.beginPath();
-                ctx.moveTo(PC.x + 25, PC.y);
-                ctx.lineTo(PC.x + 25, PC.y - 400);
-                ctx.lineWidth = 10;
-                ctx.strokeStyle = '#ff4848';
-                ctx.stroke();
+                laserCount = 0;
             } 
         }
     }, 1);
     
     //Enemy spawner 
-    var enemySpawner = setInterval(function () {
+    var enemySpawner = setInterval(function () { if (spawn == true) {
         //Random enemy variables
         var type;
         var posX = [115, 130, 145, 160, 175, 190, 205, 220, 235, 250, 265, 280]
@@ -445,7 +485,7 @@ function mainLoop() {
         
         //Instantiate enemy object with values of random variables as arguments, and add object to 'enemies' array 
         enemies.push(new enemy(posX_randnum, 100, type_randnum));
-    }, enemySpawnRate);
+    } }, enemySpawnRate);
 }
 
 //Entity object constructors
@@ -506,3 +546,19 @@ function enemy (locationX, locationY, type) {
     enemySprite_orange.src = 'images/ZAP-Enemy orange.png';
     enemySprite_red.src = 'images/ZAP-Enemy red.png'
 }
+
+ function gameOver (timeS, timeM, timeH) {
+    //Halt main game rendering
+     gameRender = false;
+     clearInterval(gameRefresh);
+     
+     //Stop game processes; spawning, etc.
+     spawn = false;
+     
+     //Clear screen
+     ctx.fillStyle = 'black';
+     ctx.fillRect(0, 0, c.width, c.height);
+     
+     //Display message
+     alert('GAME OVER');
+ }
