@@ -15,6 +15,8 @@ var countdown_hasFinished = false;
 var time_seconds = 0;
 var time_minutes = 0;
 var time_hours = 0;
+var laser;
+var laserCount = 0;
 //Entity arrays
 var enemies = [];
 //Sprites
@@ -309,6 +311,29 @@ function mainLoop() {
                 enemies[x].y++;
             }
         } 
+        
+        if (laser == true && laserCount < 11) {
+            ctx.beginPath();
+                ctx.moveTo(PC.x + 25, PC.y);
+                ctx.lineTo(PC.x + 25, PC.y - 400);
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = '#ff4848';
+                ctx.stroke();
+                laserCount++;
+            
+                 //Check if any enemies collide with it 
+                for (x = 0; x < enemies.length; x++) {
+                    if (enemies[x].x > PC.x - 10 && enemies[x].x < PC.x + 10) {
+                        //Remove from array
+                        var index = enemies.indexOf(x);
+                        enemies.splice(index, 1);
+                    }
+                }
+        }
+        else {
+            laser = false;
+            laserCount = 0;
+        }
         //Check position of player
         if (PC.x >= 370 && rightWall == false) {
             //Start moving accross right wall
@@ -393,6 +418,15 @@ function mainLoop() {
             }
             if (e.keyCode == 37 && leftWall == true && PC.y > 50) {
                 PC.y -= 15;
+            } 
+            if (e.keyCode == 32 && bottom == true) {
+                laser = true;
+                ctx.beginPath();
+                ctx.moveTo(PC.x + 25, PC.y);
+                ctx.lineTo(PC.x + 25, PC.y - 400);
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = '#ff4848';
+                ctx.stroke();
             } 
         }
     }, 1);
