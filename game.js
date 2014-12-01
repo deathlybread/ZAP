@@ -312,7 +312,7 @@ function mainLoop() {
             }
         } 
         
-        if (laser == true && laserCount < 11) {
+        if (laser == true && laserCount < 5) {
             ctx.beginPath();
                 ctx.moveTo(PC.x + 25, PC.y);
                 ctx.lineTo(PC.x + 25, PC.y - 400);
