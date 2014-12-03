@@ -287,7 +287,7 @@ function drawMap () { if (gameRender == true) {
 
 function mainLoop() {
     //Instantiate player object
-    var PC = new player(225, 390, 1, 3);
+    var PC = new player(225, 390, 1, 0);
     
     //Canvas refresh loop
     gameRefresh = setInterval(function () { if (gameRender == true) {
@@ -322,7 +322,7 @@ function mainLoop() {
                 }
             }
             else {
-                enemies[x].y++;
+                enemies[x].y += 50;
             }
         } 
         
@@ -556,9 +556,49 @@ function enemy (locationX, locationY, type) {
      spawn = false;
      
      //Clear screen
-     ctx.fillStyle = 'black';
-     ctx.fillRect(0, 0, c.width, c.height);
-     
-     //Display message
-     alert('GAME OVER');
+     setInterval(function () {
+         ctx.fillStyle = 'black';
+         ctx.fillRect(0, 0, c.width, c.height);
+         //Game over screen
+         ctx.fillStyle = '#e74c3c';
+         ctx.font = '100px PixelDart';
+         ctx.fillText('GAME OVER', 55, 200);
+         ctx.fillStyle = 'white';
+         ctx.font = '60px PixelDart';
+         ctx.fillText('Time', 205, 300);
+         ctx.font = '80px PixelDart';
+         ctx.fillStyle = '#e74c3c';
+         ctx.fillText(timeH + "-" + timeM + "-" + timeS, 175, 360);
+         
+         //High scores, storing scores with cookies
+         //Check if high score cookie already exists
+         if (checkCookie('highscore')) {
+            
+         }
+         else {
+             var totalSeconds = (timeH * 60 * 60) + (timeM * 60) + timeS;
+             document.cookie = 'highscore=" + totalSeconds "expires=Thu, 18 Dec 2100 12:00:00 UTC';
+         }
+     }, 1);
  }
+
+//Cookie functions
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
+    }
+    return "";
+}
+
+function checkCookie(cname) {
+    var cookie = getCookie(cname);
+    if (cookie!="") {
+        return true;
+    }else{
+        return false;
+        }
+    }
