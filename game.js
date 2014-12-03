@@ -318,7 +318,7 @@ function mainLoop() {
                 //Check player's lives
                 if (PC.lives <= 0) {
                     //Game over
-                    gameOver(1, 2, 3);
+                    gameOver(40, 2, 0);
                 }
             }
             else {
@@ -577,7 +577,7 @@ function enemy (locationX, locationY, type) {
          }
          else {
              var totalSeconds = (timeH * 60 * 60) + (timeM * 60) + timeS;
-             document.cookie = 'highscore=" + totalSeconds "expires=Thu, 18 Dec 2100 12:00:00 UTC';
+             document.cookie = 'highscore=' + totalSeconds + ';expires=Thu, 18 Dec 2100 12:00:00 UTC';
          }
      }, 1);
  }
