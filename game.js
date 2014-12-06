@@ -39,8 +39,6 @@ var enemySpawnRate = 1000;
 var gameRender = true;
 //Intervals
 var gameRefresh;
-//Cookies
-var cookie_reset = false;
 
 window.onload = function () {
     //Get canvas element 'game'
@@ -580,11 +578,11 @@ function enemy (locationX, locationY, type) {
              var highScore_string = getCookie('highscore');
              var highScore = parseInt(highScore_string);
              
-             if (totalSeconds > highScore && cookie_reset == false) {
+             if (totalSeconds > highScore) {
                 //New high score
                 highScore = totalSeconds;
+                document.cookie = 'highscore=;expires=Thu, 18 Dec 2000 12:00:00 UTC';
                 document.cookie = 'highscore=' + highscore + ';expires=Thu, 18 Dec 2100 12:00:00 UTC';
-                cookie_reset = true;
              }
          }
          else {
