@@ -17,6 +17,7 @@ var time_minutes = 0;
 var time_hours = 0;
 var laser;
 var laserCount = 0;
+var laserFiring = false;
 //Entity arrays
 var enemies = [];
 //Sprites
@@ -27,14 +28,10 @@ var enemySprite_green = new Image();
 var enemySprite_blue = new Image();
 var enemySprite_orange = new Image();
 var enemySprite_red = new Image();
-//Player position variables
-var rightWall;
-var leftWall;
-var bottom;
 //Enemy variables
 var spawn = true;
-//(Default spawn rate (1000 milliseconds = 1 second))
-var enemySpawnRate = 1000;
+var enemySpawnRate = 400;
+var enemySpeed = 1;
 //Whether main game should be rendered
 var gameRender = true;
 //Intervals
@@ -287,7 +284,7 @@ function drawMap () { if (gameRender == true) {
 
 function mainLoop() {
     //Instantiate player object
-    var PC = new player(225, 390, 1, 0);
+    var PC = new player(225, 390, 1, 3);
     
     //Canvas refresh loop
     gameRefresh = setInterval(function () { if (gameRender == true) {
@@ -304,6 +301,8 @@ function mainLoop() {
         ctx.font = '50px PixelDart';
         ctx.fillText(PC.lives, 240, 715);
         
+        //Random events
+        randEvent();
         //Render entities 
         ctx.drawImage(PC.sprite, PC.x, PC.y);
         
@@ -322,11 +321,13 @@ function mainLoop() {
                 }
             }
             else {
-                enemies[x].y++;
+                enemies[x].y += enemySpeed;
             }
         } 
+        enemySpeed += 0.01;
         
         if (laser == true && laserCount < 5) {
+                laserFiring = true;
                 var laserX = PC.x + 25;
                 var laserY = PC.y + 25;
             
@@ -349,73 +350,24 @@ function mainLoop() {
                 ctx.stroke();
                 laserCount++;
             
+                if (laserCount == 5) {
+                    laserFiring = false;
+                    PC.ammo--;
+                }
+            
                  //Check if any enemies collide with it 
                 for (x = 0; x < enemies.length; x++) {
-                    //Destroy enemies according to position of player
-                    //(If player is on bottom)
                     if ((enemies[x].x + 15) > laserX - 10 && (enemies[x].x - 15) < laserX + 10 && bottom == true) {
                         //Remove from array
                         var index = enemies.indexOf(enemies[x]);
                         enemies.splice(index, 1);
-                    }
-                    //(If player is on left wall)
-                    else if (enemies[x].y > laserY - 25 && enemies[x].y < laserY + 10 && leftWall == true) {
-                        //Remove from array
-                        index = enemies.indexOf(enemies[x]);
-                        enemies.splice(index, 1);
-                    }
-                    //(If player is on right wall)
-                    else if (enemies[x].y > laserY - 25 && enemies[x].y < laserY + 10 && rightWall == true) {
-                        //Remove from array
-                        index = enemies.indexOf(enemies[x]);
-                        enemies.splice(index, 1);
+                        PC.ammo++;
                     }
                 }
         }
         else {
             laser = false;
             laserCount = 0;
-        }
-        //Check position of player
-        if (PC.x >= 370 && rightWall == false) {
-            //Start moving accross right wall
-            PC.sprite = playerSprite_left;
-            PC.x = 410;
-            PC.y = 370;
-            
-            rightWall = true;
-            leftWall = false;
-            bottom = false;
-        }
-        if (PC.y > 370 && PC.x == 410 && bottom == false) {
-            //Start moving accross bottom
-            PC.sprite = playerSprite_up;
-            PC.x = 370;
-            PC.y = 390;
-            
-            rightWall = false;
-            leftWall = false;
-            bottom = true;
-        }
-        if (PC.x < 100 && leftWall == false) {
-            //Start moving accross left wall
-            PC.sprite = playerSprite_right;
-            PC.x = 45;
-            PC.y = 370;
-            
-            rightWall = false;
-            leftWall = true;
-            bottom = false;
-        }
-        if (PC.y > 370 && PC.x == 45 && bottom == false) {
-            //Start moving accross bottom
-            PC.sprite = playerSprite_up;
-            PC.x = 100;
-            PC.y = 390;
-            
-            rightWall = false;
-            leftWall = false;
-            bottom = true;
         }
     } }, 50);
     
@@ -443,28 +395,16 @@ function mainLoop() {
     //Input event handler
     var gameInput = setInterval(function () {
         document.onkeydown = function (e) {
-            if (e.keyCode == 39 && bottom == true) {
-                PC.x += 15;
+            if (e.keyCode == 39 && PC.x < 370) {
+                PC.x += 30;
             }
-            if (e.keyCode == 37 && bottom == true) {
-                PC.x -= 15;
+            if (e.keyCode == 37 && PC.x > 100) {
+                PC.x -= 30;
             }
-            if (e.keyCode == 39 && rightWall == true && PC.y > 50) {
-                PC.y -= 15;
-            }
-            if (e.keyCode == 37 && rightWall == true) {
-                PC.y += 15;
-            } 
-            if (e.keyCode == 39 && leftWall == true) {
-                PC.y += 15;
-            }
-            if (e.keyCode == 37 && leftWall == true && PC.y > 50) {
-                PC.y -= 15;
-            } 
         }
         
         document.onkeyup = function (e) {
-             if (e.keyCode == 32) {
+             if (e.keyCode == 32 && laserFiring == false && PC.ammo > 0) {
                 laser = true;
                 laserCount = 0;
             } 
@@ -486,6 +426,7 @@ function mainLoop() {
         //Instantiate enemy object with values of random variables as arguments, and add object to 'enemies' array 
         enemies.push(new enemy(posX_randnum, 100, type_randnum));
     } }, enemySpawnRate);
+    
 }
 
 //Entity object constructors
@@ -618,3 +559,16 @@ function checkCookie(cname) {
         return false;
         }
     }
+
+function randEvent () {
+    var randNum = Math.floor((Math.random() * 10) + 1);
+    
+    if (randNum == 1) {
+        spawnTimeReset();
+    }
+}
+
+//Random event functions 
+function spawnTimeReset() {
+    
+}
