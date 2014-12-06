@@ -39,6 +39,8 @@ var enemySpawnRate = 1000;
 var gameRender = true;
 //Intervals
 var gameRefresh;
+//Cookies
+var cookie_reset = false;
 
 window.onload = function () {
     //Get canvas element 'game'
@@ -318,11 +320,11 @@ function mainLoop() {
                 //Check player's lives
                 if (PC.lives <= 0) {
                     //Game over
-                    gameOver(40, 2, 0);
+                    gameOver(time_seconds, time_minutes, time_hours);
                 }
             }
             else {
-                enemies[x].y += 50;
+                enemies[x].y++;
             }
         } 
         
@@ -568,17 +570,33 @@ function enemy (locationX, locationY, type) {
          ctx.fillText('Time', 205, 300);
          ctx.font = '80px PixelDart';
          ctx.fillStyle = '#e74c3c';
-         ctx.fillText(timeH + "-" + timeM + "-" + timeS, 175, 360);
+         ctx.fillText(timeH + "-" + timeM + "-" + timeS, 165, 360);
          
          //High scores, storing scores with cookies
+         var totalSeconds = (timeH * 60 * 60) + (timeM * 60) + timeS;
          //Check if high score cookie already exists
          if (checkCookie('highscore')) {
-            
+            //Get high score cookie
+             var highScore_string = getCookie('highscore');
+             var highScore = parseInt(highScore_string);
+             
+             if (totalSeconds > highScore && cookie_reset == false) {
+                //New high score
+                highScore = totalSeconds;
+                document.cookie = 'highscore=' + highscore + ';expires=Thu, 18 Dec 2100 12:00:00 UTC';
+                cookie_reset = true;
+             }
          }
          else {
-             var totalSeconds = (timeH * 60 * 60) + (timeM * 60) + timeS;
-             document.cookie = 'highscore=' + totalSeconds + ';expires=Thu, 18 Dec 2100 12:00:00 UTC';
+             var highScore = totalSeconds;
+             document.cookie = 'highscore=' + highScore + ';expires=Thu, 18 Dec 2100 12:00:00 UTC';
          }
+         
+         var highScore_minutes = Math.floor(highScore / 60); 
+         var highScore_seconds = highScore - highScore_minutes * 60;
+         ctx.font = '80px PixelDart';
+         ctx.fillStyle = '#e74c3c';
+         ctx.fillText("0" + "-" + highScore_minutes + "-" + highScore_seconds, 165, 450);
      }, 1);
  }
 
