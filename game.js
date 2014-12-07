@@ -72,7 +72,7 @@ function splashScreen () {
         
     logo.src = 'images/ZAP-Logo2.png';
     
-    ctx.font = '20px PixelDart';
+    ctx.font = '80px PixelDart';
         
     //Menu selected option number (Get default value initially)
     var optionSelect = 0;
@@ -82,33 +82,14 @@ function splashScreen () {
         ctx.fillRect(0, 0, c.width, c.height);
         if (menu_hasSelected == false) {
             if (optionSelect == 0) {
-                ctx.fillStyle = '#e74c3c'  
+                ctx.font = '80px PixelDart';
+                ctx.fillStyle = '#e74c3c'
+                ctx.fillText('Play', 200, 300);
             }
-            else {
-                ctx.fillStyle = 'white';
-            }
-            ctx.font = '40px PixelDart';
-            ctx.fillText('Play', 210, 255);
-    
-            if (optionSelect == 1) {
-                ctx.fillStyle = '#e74c3c'  
-            }
-            else {
-                ctx.fillStyle = 'white';
-            }
-            ctx.font = '40px PixelDart';
-            ctx.fillText('Options', 210, 305);
-    
-            if (optionSelect == 2) {
-                ctx.fillStyle = '#e74c3c'  
-            }
-            else {
-                ctx.fillStyle = 'white';
-            }
-            ctx.font = '40px PixelDart';
-            ctx.fillText('Credits', 210, 355);
-            
             ctx.drawImage(logo, 150, 25);
+            ctx.font = '30px PixelDart';
+            ctx.fillStyle = 'white';
+            ctx.fillText('V 1.0', 10, 480);
         }
         else {
             clearInterval(menu);
@@ -119,14 +100,6 @@ function splashScreen () {
         if (menu_hasSelected == false) {
             document.onkeydown = function (e) { 
 
-            if (e.keyCode == 40 && optionSelect < 2) {
-                optionSelect++;
-                document.getElementById('menu-select').play();
-            }
-            if (e.keyCode == 38 && optionSelect >= 1) {
-                optionSelect--;
-                document.getElementById('menu-select').play();
-            }
             if (e.keyCode == 13) {
                 menuSelect(optionSelect);
             }
@@ -145,12 +118,6 @@ function menuSelect(option) {
     if (option == 0) {
         startGame();
     }
-    if (option == 1) {
-        options();
-    }
-    else {
-        credits();
-    }
 }
 
 function startGame() {
@@ -161,14 +128,6 @@ function startGame() {
     ctx.fillRect(0, 0, c.width, c.height);
     
     countdown();
-}
-
-function options() {
-
-}
-
-function credits () {
-
 }
 
 function countdown () {
@@ -327,6 +286,7 @@ function mainLoop() {
             ctx.drawImage(enemies[x].sprite, enemies[x].x, enemies[x].y);
             if (enemies[x].y >= 385) {
                 PC.lives--;
+                document.getElementById('shooter-hit').play();
                 //Destroy enemy 
                 var index = enemies.indexOf(enemies[x]);
                 enemies.splice(index, 1);
@@ -395,6 +355,14 @@ function mainLoop() {
                             PC.ammo++;
                         }
                     }
+                    else if (laser_tripleLaser == true) {
+                         if ((enemies[x].x + 15) > laserX - 30 && (enemies[x].x - 15) < laserX + 30) {
+                            //Remove from array
+                            var index = enemies.indexOf(enemies[x]);
+                            enemies.splice(index, 1);
+                            PC.ammo++;
+                        }
+                    }
                 }
         }
         else {
@@ -439,6 +407,7 @@ function mainLoop() {
             if (e.keyCode == 32 && laserFiring == false && PC.ammo > 0) {
                 laser = true;
                 laserCount = 0;
+                document.getElementById('laser-shoot').play();
             }
             if (e.keyCode == 38 && PC.bomb == false) {
                 bombs.push(new bomb(PC.x, PC.y + 200));
@@ -519,6 +488,8 @@ function enemy (locationX, locationY, type) {
 }
 
  function gameOver (timeS, timeM, timeH) {
+    //Play game over sound
+    document.getElementById('game-over-explosion').play();
     //Halt main game rendering
      gameRender = false;
      clearInterval(gameRefresh);
@@ -563,9 +534,23 @@ function enemy (locationX, locationY, type) {
          
          var highScore_minutes = Math.floor(highScore / 60); 
          var highScore_seconds = highScore - highScore_minutes * 60;
+         ctx.font = '60px PixelDart';
+         ctx.fillStyle = 'white';
+         ctx.fillText('High Score', 155, 415);
          ctx.font = '80px PixelDart';
          ctx.fillStyle = '#e74c3c';
-         ctx.fillText("0" + "-" + highScore_minutes + "-" + highScore_seconds, 165, 450);
+         ctx.fillText("0" + "-" + highScore_minutes + "-" + highScore_seconds, 165, 475);
+         ctx.font = '60px PixelDart';
+         ctx.fillStyle = 'white';
+         ctx.fillText('<ENTER> To continue', 25, 525);
+         
+         setInterval(function () {
+            document.onkeydown = function (e) {
+            if (e.keyCode == 13) {
+                location.reload();
+            }
+         };
+         }, 1);
      }, 1);
  }
 
@@ -611,13 +596,27 @@ function speedReset() {
 }
 
 function doubleLaser() {
-    laser_doubleLaser = true;
-    laser_tripleLaser = false;
+    if (laser_doubleLaser != true) {
+        laser_doubleLaser = true;
+        laser_tripleLaser = false;
+        canvasAlert('DOUBLE LASER!');
+    }
 }
 
 function tripleLaser() {
-    laser_tripleLaser = true;
-    laser_doubleLaser = false;
+    if (laser_tripleLaser != true) {
+        laser_tripleLaser = true;
+        laser_doubleLaser = false;
+        canvasAlert('TRIPLE LASER!')
+    }
+}
+
+function singleLaser() {
+    if (laser_doubleLaser == true || laser_tripleLaser == true) {
+        laser_doubleLaser = false;
+        laser_tripleLaser = false;
+        canvasAlert('SINGLE LASER!')
+    }
 }
 
 function canvasAlert(message) {
