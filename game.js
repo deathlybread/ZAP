@@ -18,6 +18,7 @@ var time_hours = 0;
 var laser;
 var laserCount = 0;
 var laserFiring = false;
+var fireBomb = false;
 //Entity arrays
 var enemies = [];
 //Sprites
@@ -36,6 +37,10 @@ var enemySpeed = 1;
 var gameRender = true;
 //Intervals
 var gameRefresh;
+//Canvas alert message
+var render_alert = false;
+var alert_string;
+var timer = 0;
 
 window.onload = function () {
     //Get canvas element 'game'
@@ -301,6 +306,16 @@ function mainLoop() {
         ctx.font = '50px PixelDart';
         ctx.fillText(PC.lives, 240, 715);
         
+        //Draw canvas alert
+        if (render_alert == true && timer < 1000) {
+            ctx.fillText(alert_string, 125, 35);
+            timer += 50;
+        }
+        else {
+            render_alert = false;
+            alert_string = "";
+            timer = 0;
+        }
         //Random events
         randEvent();
         //Render entities 
@@ -332,19 +347,8 @@ function mainLoop() {
                 var laserY = PC.y + 25;
             
                 ctx.beginPath();
-                //Set coordinates according to position of player
-                if (bottom == true) {
-                    ctx.moveTo(laserX - 1, PC.y - 5);
-                    ctx.lineTo(laserX - 1, PC.y - 400);
-                }
-                else if (leftWall == true) {
-                    ctx.moveTo(PC.x + 50, laserY);
-                    ctx.lineTo(PC.x + 400, laserY);
-                }
-                else if (rightWall == true) {
-                    ctx.moveTo(PC.x - 5, laserY);
-                    ctx.lineTo(PC.x - 400, laserY);
-                }
+                ctx.moveTo(laserX - 1, PC.y - 5);
+                ctx.lineTo(laserX - 1, PC.y - 400);
                 ctx.lineWidth = 10;
                 ctx.strokeStyle = '#ff4848';
                 ctx.stroke();
@@ -357,7 +361,7 @@ function mainLoop() {
             
                  //Check if any enemies collide with it 
                 for (x = 0; x < enemies.length; x++) {
-                    if ((enemies[x].x + 15) > laserX - 10 && (enemies[x].x - 15) < laserX + 10 && bottom == true) {
+                    if ((enemies[x].x + 15) > laserX - 10 && (enemies[x].x - 15) < laserX + 10) {
                         //Remove from array
                         var index = enemies.indexOf(enemies[x]);
                         enemies.splice(index, 1);
@@ -404,10 +408,14 @@ function mainLoop() {
         }
         
         document.onkeyup = function (e) {
-             if (e.keyCode == 32 && laserFiring == false && PC.ammo > 0) {
+            if (e.keyCode == 32 && laserFiring == false && PC.ammo > 0) {
                 laser = true;
                 laserCount = 0;
-            } 
+            }
+            if (e.keyCode == 38 && PC.bomb == true) {
+                fireBomb = true;
+            }
+             
         }
     }, 1);
     
@@ -438,18 +446,15 @@ function player (locationX, locationY, ammo, lives) {
     
     //(Default sprite is pointing upward)
     this.sprite = playerSprite_up;
-    //(Therefore, bottom player position is true
-    bottom = true;
-    rightWall = false;
-    leftWall = false;
     
     playerSprite_up.onload = function () {
         ctx.drawImage(playerSprite_up, this.x, this.y);
     };
     
     playerSprite_up.src = 'images/ZAP-Shooter up.png';
-    playerSprite_left.src = 'images/ZAP-Shooter left.png';
-    playerSprite_right.src = 'images/ZAP-Shooter right.png';
+    
+    var bomb;
+    this.bomb = bomb;
 }
 
 function enemy (locationX, locationY, type) {
@@ -486,6 +491,19 @@ function enemy (locationX, locationY, type) {
     enemySprite_blue.src = 'images/ZAP-Enemy blue.png';
     enemySprite_orange.src = 'images/ZAP-Enemy orange.png';
     enemySprite_red.src = 'images/ZAP-Enemy red.png'
+}
+
+function bomb (locationX, locationY) {
+    this.x = locationX;
+    this.y = locationY;
+    
+    this.sprite = new Image();
+    
+    this.sprite.onload = function () {
+        ctx.drawImage(this.sprite, this.x, this.y);
+    };
+    
+    this.sprite.src = 'images/ZAP-Bomb.png';
 }
 
  function gameOver (timeS, timeM, timeH) {
@@ -561,14 +579,24 @@ function checkCookie(cname) {
     }
 
 function randEvent () {
-    var randNum = Math.floor((Math.random() * 10) + 1);
+    var randNum = Math.floor((Math.random() * 400) + 1);
     
     if (randNum == 1) {
-        spawnTimeReset();
+        speedReset();
     }
 }
 
 //Random event functions 
-function spawnTimeReset() {
-    
+function speedReset() {
+    canvasAlert('SPEED RESET!')
+    enemySpeed = 1;
+}
+
+function addBomb() {
+    PC.bomb = true;
+}
+
+function canvasAlert(message) {
+    render_alert = true;
+    alert_string = message;
 }
