@@ -18,7 +18,8 @@ var time_hours = 0;
 var laser;
 var laserCount = 0;
 var laserFiring = false;
-var fireBomb = false;
+var laser_doubleLaser = false;
+var laser_tripleLaser = false;
 //Entity arrays
 var enemies = [];
 //Sprites
@@ -318,6 +319,7 @@ function mainLoop() {
         }
         //Random events
         randEvent();
+        
         //Render entities 
         ctx.drawImage(PC.sprite, PC.x, PC.y);
         
@@ -347,8 +349,24 @@ function mainLoop() {
                 var laserY = PC.y + 25;
             
                 ctx.beginPath();
-                ctx.moveTo(laserX - 1, PC.y - 5);
-                ctx.lineTo(laserX - 1, PC.y - 400);
+                if (laser_doubleLaser == false && laser_tripleLaser == false) {
+                    ctx.moveTo(laserX - 1, PC.y - 5);
+                    ctx.lineTo(laserX - 1, PC.y - 400);
+                }
+                else if (laser_doubleLaser == true) {
+                    ctx.moveTo(laserX - 10, PC.y - 5);
+                    ctx.lineTo(laserX - 10, PC.y - 400);
+                    ctx.moveTo(laserX + 10, PC.y - 5);
+                    ctx.lineTo(laserX + 10, PC.y - 400);
+                }
+                else if (laser_tripleLaser == true) {
+                    ctx.moveTo(laserX - 20, PC.y - 5);
+                    ctx.lineTo(laserX - 20, PC.y - 400);
+                    ctx.moveTo(laserX + 20, PC.y - 5);
+                    ctx.lineTo(laserX + 20, PC.y - 400);
+                    ctx.moveTo(laserX, PC.y - 5);
+                    ctx.lineTo(laserX, PC.y - 400);
+                }
                 ctx.lineWidth = 10;
                 ctx.strokeStyle = '#ff4848';
                 ctx.stroke();
@@ -361,11 +379,21 @@ function mainLoop() {
             
                  //Check if any enemies collide with it 
                 for (x = 0; x < enemies.length; x++) {
-                    if ((enemies[x].x + 15) > laserX - 10 && (enemies[x].x - 15) < laserX + 10) {
-                        //Remove from array
-                        var index = enemies.indexOf(enemies[x]);
-                        enemies.splice(index, 1);
-                        PC.ammo++;
+                    if (laser_doubleLaser == false && laser_tripleLaser == false) { 
+                        if ((enemies[x].x + 15) > laserX - 10 && (enemies[x].x - 15) < laserX + 10) {
+                            //Remove from array
+                            var index = enemies.indexOf(enemies[x]);
+                            enemies.splice(index, 1);
+                            PC.ammo++;
+                        }
+                    }
+                    else if (laser_doubleLaser == true) {
+                        if ((enemies[x].x + 15) > laserX - 20 && (enemies[x].x - 15) < laserX + 20) {
+                            //Remove from array
+                            var index = enemies.indexOf(enemies[x]);
+                            enemies.splice(index, 1);
+                            PC.ammo++;
+                        }
                     }
                 }
         }
@@ -412,8 +440,8 @@ function mainLoop() {
                 laser = true;
                 laserCount = 0;
             }
-            if (e.keyCode == 38 && PC.bomb == true) {
-                fireBomb = true;
+            if (e.keyCode == 38 && PC.bomb == false) {
+                bombs.push(new bomb(PC.x, PC.y + 200));
             }
              
         }
@@ -452,9 +480,6 @@ function player (locationX, locationY, ammo, lives) {
     };
     
     playerSprite_up.src = 'images/ZAP-Shooter up.png';
-    
-    var bomb;
-    this.bomb = bomb;
 }
 
 function enemy (locationX, locationY, type) {
@@ -491,19 +516,6 @@ function enemy (locationX, locationY, type) {
     enemySprite_blue.src = 'images/ZAP-Enemy blue.png';
     enemySprite_orange.src = 'images/ZAP-Enemy orange.png';
     enemySprite_red.src = 'images/ZAP-Enemy red.png'
-}
-
-function bomb (locationX, locationY) {
-    this.x = locationX;
-    this.y = locationY;
-    
-    this.sprite = new Image();
-    
-    this.sprite.onload = function () {
-        ctx.drawImage(this.sprite, this.x, this.y);
-    };
-    
-    this.sprite.src = 'images/ZAP-Bomb.png';
 }
 
  function gameOver (timeS, timeM, timeH) {
@@ -581,8 +593,14 @@ function checkCookie(cname) {
 function randEvent () {
     var randNum = Math.floor((Math.random() * 400) + 1);
     
-    if (randNum == 1) {
+    if (randNum == 100) {
         speedReset();
+    }
+    else if (randNum == 200) {
+        doubleLaser();
+    }
+    else if (randNum == 300) {
+        tripleLaser();
     }
 }
 
@@ -592,8 +610,14 @@ function speedReset() {
     enemySpeed = 1;
 }
 
-function addBomb() {
-    PC.bomb = true;
+function doubleLaser() {
+    laser_doubleLaser = true;
+    laser_tripleLaser = false;
+}
+
+function tripleLaser() {
+    laser_tripleLaser = true;
+    laser_doubleLaser = false;
 }
 
 function canvasAlert(message) {
