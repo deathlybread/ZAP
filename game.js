@@ -585,6 +585,9 @@ function randEvent () {
     else if (randNum == 300) {
         tripleLaser();
     }
+    else if (randNum == 400) {
+        singleLaser();
+    }
 }
 
 //Random event functions 
