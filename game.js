@@ -52,7 +52,7 @@ window.onload = function () {
     //Fill canvas with black vakground
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, c.width, c.height);
-    
+
     //initialise game
     initialise();
 };
@@ -121,6 +121,8 @@ function menuSelect(option) {
 }
 
 function startGame() {
+    can_show_hide = false;
+    document.getElementById('instructions').style.display = 'none';
     //Explode canvas
     c.height = 800;
     //Clear screen

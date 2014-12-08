@@ -70,13 +70,14 @@
         
         <script type='text/javascript'>
             var show_hide = 'show';
+            var can_show_hide = true;
             function showInstructions() {
-                if (document.getElementById('instructions-show').textContent = 'SHOW' && show_hide == 'show') {
+                if (document.getElementById('instructions-show').textContent = 'SHOW' && show_hide == 'show' && can_show_hide == true) {
                     document.getElementById('instructions').style.display = 'block';
                     document.getElementById('instructions-show').textContent = 'HIDE';
                     show_hide = 'hide';
                 }
-                else if (document.getElementById('instructions-show').textContent = 'HIDE' && show_hide == 'hide') {
+                else if (document.getElementById('instructions-show').textContent = 'HIDE' && show_hide == 'hide' && can_show_hide == true) {
                     document.getElementById('instructions').style.display = 'none';
                     document.getElementById('instructions-show').textContent = 'SHOW';
                     show_hide = 'show';
