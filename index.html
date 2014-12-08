@@ -10,6 +10,33 @@
             <canvas id='game' width=500 height=500>
                 Your browser does not support HTML5 canvas!
             </canvas>
+            <br />
+            <br />
+            <h2>How to play<br />&nbsp;&nbsp;<a id='instructions-show' onclick='showInstructions()' href='#'>SHOW</a></h2>
+            <div id = 'instructions' style='display: none;'>
+            <h3>Controls</h3>
+            <ul>
+                <li>-- <b>[ENTER]</b> <i>to select</i></li>
+                <br />
+                <li>-- <b>[RIGHT ARROW]</b> <i>to move shooter right</i></li>
+                <br />
+                <li>-- <b>[LEFT ARROW]</b> <i>to move shooter left</i></li>
+                <br />
+                <li>-- <b>[SPACE]</b> <i>to shoot</i></li>
+            </ul>
+            <h3>Instructions</h3>
+            <ul>
+                <li>-- Shoot the enemies coming down from the top</li>
+                <br />
+                <li>-- Watch your ammo (destroying 1 enemy = +1 ammo)</li>
+                <br />
+                <li>-- If enemies reach the bottom -1 life (when no lives are left, game over)</li>
+                <br />
+                <li>-- Speed of enemies increases over time</li>
+                <br />
+                <li>-- Random events will help you - speed reset, double laser, triple laser</li>
+            </ul>
+            </div>
         </center>
         <!--Game script for canvas-->
         <script src='game.js'></script>
@@ -40,5 +67,21 @@
             <source src='sounds/laser-shoot.wav'>
             <source src='sounds/laser-shoot.mp3'>
         </audio>
+        
+        <script type='text/javascript'>
+            var show_hide = 'show';
+            function showInstructions() {
+                if (document.getElementById('instructions-show').textContent = 'SHOW' && show_hide == 'show') {
+                    document.getElementById('instructions').style.display = 'block';
+                    document.getElementById('instructions-show').textContent = 'HIDE';
+                    show_hide = 'hide';
+                }
+                else if (document.getElementById('instructions-show').textContent = 'HIDE' && show_hide == 'hide') {
+                    document.getElementById('instructions').style.display = 'none';
+                    document.getElementById('instructions-show').textContent = 'SHOW';
+                    show_hide = 'show';
+                }
+            }
+        </script>
     </body>
 </html>

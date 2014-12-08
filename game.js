@@ -409,10 +409,6 @@ function mainLoop() {
                 laserCount = 0;
                 document.getElementById('laser-shoot').play();
             }
-            if (e.keyCode == 38 && PC.bomb == false) {
-                bombs.push(new bomb(PC.x, PC.y + 200));
-            }
-             
         }
     }, 1);
     
@@ -623,3 +619,4 @@ function canvasAlert(message) {
     render_alert = true;
     alert_string = message;
 }
+
